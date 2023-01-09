@@ -1,0 +1,85 @@
+// Here you can add other styles
+
+// .sidebar{
+//     background-color: blue;
+// }
+
+.wrapper {
+    background-image: url(../Banner.png);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+// .header{
+//     background: rgba(255, 255, 255, 0);
+// }
+
+header {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+footer {
+    font-family: 'Poppins', sans-serif;
+}
+
+c-side-bar {
+    font-family: 'Poppins', sans-serif;
+}
+
+table {
+    font-family: 'Poppins', sans-serif;
+}
+
+c-card {
+    font-family: 'Poppins', sans-serif;
+}
+
+button {
+    font-family: 'Poppins', sans-serif;
+}
+
+.p-dialog .p-dialog-header {
+    background: #64748B !important;
+    color: white !important;
+    padding: 1rem
+}
+
+.p-dialog-body {
+    padding-top: 20px;
+}
+
+.p-confirm-dialog .p-dialog-content {
+    display: flex;
+    align-items: center;
+    padding-top: 20px !important;
+}
+
+// .p-dialog .p-dialog-content {
+//     padding-bottom: 5rem !important;
+// }
+
+.pi-times {
+    color: white;
+}
+
+.borderStyle {
+    border: 3px solid white;
+}
+
+// .p-button {
+//     border: 3px solid #ffff !important;
+// }
+
+.img-brand {
+    height: auto;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+    text-align: center !important;
+}
+
