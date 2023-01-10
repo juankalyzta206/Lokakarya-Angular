@@ -1,18 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransaksiTelkomService {
+  baseUrl = environment.BASE_API_URL;
+
   findAll(): Observable<any> {
-    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/findStatus1', {
+    return this.http.get(this.baseUrl + 'transaksitelkom/findStatus1', {
       responseType: 'json',
     });
   }
   getTotal(): Observable<any> {
-    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/sumAll', {
+    return this.http.get(this.baseUrl + 'transaksitelkom/sumAll', {
       responseType: 'json',
     });
   }
@@ -22,7 +25,7 @@ export class TransaksiTelkomService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/';
+    const urlPost = this.baseUrl + 'transaksitelkom/';
     return this.http.post<any>(urlPost, data, { headers });
   }
 
@@ -31,7 +34,7 @@ export class TransaksiTelkomService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/';
+    const urlPost = this.baseUrl + 'transaksitelkom/';
     return this.http.put<any>(urlPost, data, { headers });
   }
 
@@ -41,7 +44,7 @@ export class TransaksiTelkomService {
       Accept: 'application/json',
     });
     return this.http.delete(
-      'https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/deleteById?id=' + id
+      this.baseUrl + 'transaksitelkom/deleteById?id=' + id
     );
   }
 

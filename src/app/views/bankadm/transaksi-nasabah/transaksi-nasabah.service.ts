@@ -1,23 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransaksiNasabahService {
+
+  baseUrl = environment.BASE_API_URL;
+
   findAll(): Observable<any> {
-    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/findAllPlan', {
+    return this.http.get(this.baseUrl + 'transfernasabah/findAllPlan', {
       responseType: 'json',
     });
   }
-//https://lokakarya-spring-boot-production.up.railway.app
+
   addTransaksiNasabah(data: any): Observable<any> {
     var headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/';
+    const urlPost = this.baseUrl + 'transfernasabah/';
     return this.http.post<any>(urlPost, data, { headers });
   }
 
@@ -26,7 +30,7 @@ export class TransaksiNasabahService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/';
+    const urlPost = this.baseUrl + 'transfernasabah/';
     return this.http.put<any>(urlPost, data, { headers });
   }
 
@@ -36,7 +40,7 @@ export class TransaksiNasabahService {
       Accept: 'application/json',
     });
     return this.http.delete(
-      'https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/deleteById?id=' + id
+      this.baseUrl + 'transfernasabah/deleteById?id=' + id
     );
   }
 
