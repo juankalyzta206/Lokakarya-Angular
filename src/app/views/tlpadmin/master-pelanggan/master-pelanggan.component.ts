@@ -1,18 +1,23 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { MasterPelangganInterface } from './master-pelanggan-interface'
-import { MasterService } from './master.service'
+import { MasterPelangganInterface } from './master-pelanggan-interface';
+import { MasterService } from './master.service';
 
 @Component({
   selector: 'app-master-pelanggan',
   templateUrl: './master-pelanggan.component.html',
   styleUrls: ['./master-pelanggan.component.scss'],
-  providers: [CurrencyPipe]
+  providers: [CurrencyPipe],
 })
 export class MasterPelangganComponent implements OnInit {
-
   public cols: any = [];
   public pelanggan: MasterPelangganInterface[] = [];
   public users: any = [];
@@ -28,29 +33,31 @@ export class MasterPelangganComponent implements OnInit {
   berhasilDelete: boolean = false; //menampilkan error
   gagalDelete: boolean = false;
   public masterPelanggan: any = [];
-  searchQuery: string='';
+  searchQuery: string = '';
 
   getElement(item: any) {
     // this.element = item;
     //this.form.setValue;
     console.log(this.element);
-
   }
+
+  //menampilkan dialog delete
   showdelete(reference: MasterPelangganInterface) {
     this.form.setValue(reference);
     this.isEdit = false;
     this.isAdd = false;
     this.isDelete = true;
-    this.header = "Hapus Pelanggan";
+    this.header = 'Hapus Pelanggan';
     this.form.disable();
     this.masterform = true;
   }
 
+  //menampilkan dialog add
   showAdd() {
     this.isEdit = false;
     this.isAdd = true;
     this.isDelete = false;
-    this.header = "Tambah Pelanggan";
+    this.header = 'Tambah Pelanggan';
     this.form.reset();
     this.form.enable();
     this.form.controls['nama'].disable();
@@ -59,11 +66,12 @@ export class MasterPelangganComponent implements OnInit {
     this.masterform = true;
   }
 
+  //menampilkan dialog edit
   showEdit(reference: MasterPelangganInterface) {
     this.isEdit = true;
     this.isAdd = false;
     this.isDelete = false;
-    this.header = "Edit Pelanggan";
+    this.header = 'Edit Pelanggan';
     this.form.enable();
     this.form.controls['idPelanggan'].disable();
     this.form.setValue(reference);
@@ -76,21 +84,21 @@ export class MasterPelangganComponent implements OnInit {
     noTelp: new FormControl(''),
     alamat: new FormControl(''),
     userId: new FormControl(0),
-  })
+  });
   submitted = false;
   paramIdPelanggan: number = 0;
 
   constructor(
     private masterPelangganService: MasterService,
     private formBuilder: FormBuilder,
-    private confirmationService: ConfirmationService,
-  ) { }
-
+    private confirmationService: ConfirmationService
+  ) {}
 
   // untuk auto input berdasarkan dropdown
   changeSelect(event: any) {
     // console.log(event.target.value);
     // console.log(this.users);
+    // memanggil service findUserById untuk kebutuhan add pelanggan
     this.masterPelangganService.findUserById(event.target.value).subscribe({
       next: (res: any) => {
         this.selectedUser = res.data[0];
@@ -100,10 +108,9 @@ export class MasterPelangganComponent implements OnInit {
       },
       error: (error) => {
         console.error('ini error: ', error);
-      }
-    });}
-
-
+      },
+    });
+  }
 
   // GetConfirmDelete() {
   //   this.confirmationService.confirm({
@@ -112,20 +119,27 @@ export class MasterPelangganComponent implements OnInit {
   //   });
   // }
 
+  // menampilkan confirm dialog add
   GetConfirmAdd() {
     this.confirmationService.confirm({
-      message: 'Berhasil menambahkan pelanggan dengan nama  ' + this.form.controls['nama'].value,
+      message:
+        'Berhasil menambahkan pelanggan dengan nama  ' +
+        this.form.controls['nama'].value,
       header: 'Berhasil menambahkan',
     });
   }
 
+  // menampilkan confirm dialog edit
   GetConfirmEdit() {
     this.confirmationService.confirm({
-      message: 'Berhasil memperbarui pelanggan dengan ID ' + this.form.controls['idPelanggan'].value,
+      message:
+        'Berhasil memperbarui pelanggan dengan ID ' +
+        this.form.controls['idPelanggan'].value,
       header: 'Pelanggan diperbarui',
     });
   }
 
+  // memanggil service findAll dan findAllUserId
   refreshPage() {
     this.masterPelangganService.findAll().subscribe({
       next: (res: any) => {
@@ -134,7 +148,7 @@ export class MasterPelangganComponent implements OnInit {
       },
       error: (error) => {
         console.error('ini error: ', error);
-      }
+      },
     });
 
     this.masterPelangganService.findAllUserId().subscribe({
@@ -144,9 +158,8 @@ export class MasterPelangganComponent implements OnInit {
       },
       error: (error) => {
         console.error('ini error: ', error);
-      }
+      },
     });
-
   }
 
   getData() {
@@ -157,12 +170,13 @@ export class MasterPelangganComponent implements OnInit {
       },
       error: (error) => {
         console.error('ini error: ', error);
-      }
+      },
     });
   }
 
   ngOnInit(): void {
     console.log(this.pelanggan);
+    // memanggil data findAll ketika komponen dibuka
     this.refreshPage();
 
     this.cols = [
@@ -171,39 +185,21 @@ export class MasterPelangganComponent implements OnInit {
       { field: 'noTelp', header: 'Nomor Telepon' },
       { field: 'alamat', header: 'Alamat' },
       { field: 'userId', header: 'User ID' },
-
     ];
     this.form = this.formBuilder.group({
-      idPelanggan: [
-        0,
-      ],
+      idPelanggan: [0],
       nama: [
         '',
         [
           Validators.required,
           Validators.minLength(1),
           Validators.maxLength(50),
-        ]
+        ],
       ],
-      noTelp: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(13),
-        ]
-      ],
-      alamat: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(50),
-        ]
-      ],
-      userId: [
-        0,
-      ],
-    })
-
+      noTelp: ['', [Validators.required, Validators.maxLength(13)]],
+      alamat: ['', [Validators.required, Validators.maxLength(50)]],
+      userId: [0],
+    });
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -216,7 +212,7 @@ export class MasterPelangganComponent implements OnInit {
     if (this.form.invalid) {
       return;
     } else {
-      if (this.isAdd){
+      if (this.isAdd) {
         this.form.controls['nama'].enable();
         this.form.controls['noTelp'].enable();
         this.form.controls['alamat'].enable();
@@ -226,7 +222,7 @@ export class MasterPelangganComponent implements OnInit {
       }
       let data = JSON.stringify(this.form.value);
       console.log(data);
-      if (this.isAdd){
+      if (this.isAdd) {
         this.form.controls['nama'].disable();
         this.form.controls['noTelp'].disable();
         this.form.controls['alamat'].disable();
@@ -247,9 +243,9 @@ export class MasterPelangganComponent implements OnInit {
             this.cekError = true;
             console.error('ini error: ', error);
             // alert(error.error.message);
-          }
+          },
         });
-      };
+      }
 
       if (this.isEdit) {
         this.masterPelangganService.editPelanggan(data).subscribe({
@@ -262,29 +258,30 @@ export class MasterPelangganComponent implements OnInit {
           error: (error) => {
             console.error('ini error: ', error);
             alert(error.error.message);
-          }
+          },
         });
-      };
+      }
 
       if (this.isDelete) {
-        this.masterPelangganService.deleteMasterPelanggan(this.form.controls['idPelanggan'].value).subscribe({
-          next: (res: any) => {
+        this.masterPelangganService
+          .deleteMasterPelanggan(this.form.controls['idPelanggan'].value)
+          .subscribe({
+            next: (res: any) => {
+              this.masterform = false;
+              // this.GetConfirmDelete();
+              this.cekErrorDel = false;
+              this.berhasilDelete = true;
+              this.onReset();
 
-            this.masterform = false;
-            // this.GetConfirmDelete();
-            this.cekErrorDel =false;
-            this.berhasilDelete = true;
-            this.onReset();
-
-            // console.log(res);
-          },
-          error: (error) => {
-            //this.gagalDelete = true;
-            this.cekErrorDel = true;
-            this.berhasilDelete = false;
-            console.error('ini error: ', error);
-          }
-        });
+              // console.log(res);
+            },
+            error: (error) => {
+              //this.gagalDelete = true;
+              this.cekErrorDel = true;
+              this.berhasilDelete = false;
+              console.error('ini error: ', error);
+            },
+          });
       }
     }
   }
@@ -294,6 +291,7 @@ export class MasterPelangganComponent implements OnInit {
     if (this.isEdit) {
       let temp: number = this.form.controls['idPelanggan'].value;
       this.form.reset();
+      // this.form.controls['idPelanggan'].reset();
       this.form.controls['idPelanggan'].setValue(temp);
     } else {
       this.form.reset();
@@ -312,23 +310,24 @@ export class MasterPelangganComponent implements OnInit {
     this.cekError = false;
     this.cekErrorDel = false;
     this.berhasilDelete = false;
-    this.onReset()
+    this.onReset();
   }
 
-  deleteMasterPelanggan(){
-    this.masterPelangganService.deleteMasterPelanggan(this.form.controls['idPelanggan'].value).subscribe({
-      next: (res: any) => {
-        this.masterform = false;
-        this.berhasilDelete = true;
-        this.onReset();
+  deleteMasterPelanggan() {
+    this.masterPelangganService
+      .deleteMasterPelanggan(this.form.controls['idPelanggan'].value)
+      .subscribe({
+        next: (res: any) => {
+          this.masterform = false;
+          this.berhasilDelete = true;
+          this.onReset();
 
-        // console.log(res);
-      },
-      error: (error) => {
-        this.cekErrorDel = true;
-        console.error('ini error: ', error);
-      }
-    });
+          // console.log(res);
+        },
+        error: (error) => {
+          this.cekErrorDel = true;
+          console.error('ini error: ', error);
+        },
+      });
   }
-
 }

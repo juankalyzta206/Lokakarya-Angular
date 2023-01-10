@@ -3,7 +3,13 @@ import { ConfirmationService } from 'primeng/api';
 import { TransaksiTelkomInterface } from './transaksi-telkom-interface';
 import { TransaksiTelkomService } from './transaksi-telkom.service';
 import { MasterService } from '../master-pelanggan/master.service';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-transaksi-telkom',
@@ -11,7 +17,6 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from
   styleUrls: ['./transaksi-telkom.component.scss'],
 })
 export class TransaksiTelkomComponent implements OnInit {
-
   public cols: any = [];
   public transaksi: any = [];
   public pelanggan: any = [];
@@ -23,9 +28,9 @@ export class TransaksiTelkomComponent implements OnInit {
   isAdd: boolean = false;
   isDelete: boolean = false;
   public dateValue: Date | undefined;
-  searchQuery: string='';
+  searchQuery: string = '';
 
-
+  //menampilkan dialog delete
   showdelete(reference: TransaksiTelkomInterface) {
     this.form.setValue(reference);
     this.isEdit = false;
@@ -36,6 +41,7 @@ export class TransaksiTelkomComponent implements OnInit {
     this.transaksiform = true;
   }
 
+  //menampilkan dialog add
   showAdd() {
     this.isEdit = false;
     this.isAdd = true;
@@ -48,6 +54,7 @@ export class TransaksiTelkomComponent implements OnInit {
     this.form.controls['status'].disable();
   }
 
+  //menampilkan dialog edit
   showEdit(reference: TransaksiTelkomInterface) {
     this.isEdit = true;
     this.isAdd = false;
@@ -68,6 +75,7 @@ export class TransaksiTelkomComponent implements OnInit {
     tahunTagihan: new FormControl(0),
     uang: new FormControl(0),
     status: new FormControl(0),
+    nama: new FormControl(''),
   });
   submitted = false;
   paramIdTransaksi: number = 0;
@@ -77,8 +85,9 @@ export class TransaksiTelkomComponent implements OnInit {
     private masterPelangganService: MasterService,
     private formBuilder: FormBuilder,
     private confirmationService: ConfirmationService
-  ) { }
+  ) {}
 
+  // menampilkan confirm dialog add
   GetConfirmDelete() {
     this.confirmationService.confirm({
       message:
@@ -89,6 +98,7 @@ export class TransaksiTelkomComponent implements OnInit {
     });
   }
 
+  // menampilkan confirm dialog add
   getConfirmAdd() {
     this.confirmationService.confirm({
       message:
@@ -98,6 +108,7 @@ export class TransaksiTelkomComponent implements OnInit {
     });
   }
 
+  // menampilkan confirm dialog add
   getConfirmEdit() {
     this.confirmationService.confirm({
       message:
@@ -107,6 +118,7 @@ export class TransaksiTelkomComponent implements OnInit {
     });
   }
 
+  // memanggil service findAll dan findAllUserId
   refreshPage() {
     this.transaksiTelkomService.findAll().subscribe({
       next: (res: any) => {
@@ -125,7 +137,7 @@ export class TransaksiTelkomComponent implements OnInit {
       },
       error: (error) => {
         console.error('ini error: ', error);
-      }
+      },
     });
     this.transaksiTelkomService.getTotal().subscribe({
       next: (res: any) => {
@@ -134,7 +146,7 @@ export class TransaksiTelkomComponent implements OnInit {
       },
       error: (error) => {
         console.error('ini error: ', error);
-      }
+      },
     });
   }
 
@@ -151,6 +163,7 @@ export class TransaksiTelkomComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // memanggil data findAll ketika komponen dibuka
     this.refreshPage();
 
     this.cols = [
@@ -160,7 +173,7 @@ export class TransaksiTelkomComponent implements OnInit {
       { field: 'tahunTagihan', header: 'Tahun Tagihan' },
       { field: 'uang', header: 'Uang' },
       { field: 'status', header: 'Status' },
-
+      { field: 'nama', header: 'Nama' },
     ];
 
     this.form = this.formBuilder.group({
@@ -176,6 +189,7 @@ export class TransaksiTelkomComponent implements OnInit {
       uang: [0, [Validators.required, Validators.maxLength(8)]],
       status: [1, Validators.required],
       idTransaksi: [0],
+      nama: [''],
     });
   }
 
@@ -191,8 +205,6 @@ export class TransaksiTelkomComponent implements OnInit {
     } else {
       if (this.isEdit || this.isAdd) {
         this.form.enable();
-
-
       }
       let data = JSON.stringify(this.form.value);
       console.log(data);
@@ -218,7 +230,7 @@ export class TransaksiTelkomComponent implements OnInit {
           error: (error) => {
             console.error('ini error: ', error);
             alert(error.error.message);
-          }
+          },
         });
       }
       if (this.isEdit) {
@@ -232,21 +244,23 @@ export class TransaksiTelkomComponent implements OnInit {
           error: (error) => {
             console.error('ini error: ', error);
             alert(error.error.message);
-          }
+          },
         });
       }
 
       if (this.isDelete) {
-        this.transaksiTelkomService.deleteTransaksi(this.form.controls['idTransaksi'].value).subscribe({
-          next: (res: any) => {
-            this.onReset();
-            this.transaksiform = false;
-            // console.log(res);
-          },
-          error: (error) => {
-            console.error('ini error: ', error);
-          }
-        });
+        this.transaksiTelkomService
+          .deleteTransaksi(this.form.controls['idTransaksi'].value)
+          .subscribe({
+            next: (res: any) => {
+              this.onReset();
+              this.transaksiform = false;
+              // console.log(res);
+            },
+            error: (error) => {
+              console.error('ini error: ', error);
+            },
+          });
       }
     }
   }
@@ -256,6 +270,8 @@ export class TransaksiTelkomComponent implements OnInit {
     if (this.isEdit) {
       let temp: number = this.form.controls['status'].value;
       this.form.reset();
+      this.form.controls['idTransaksi'].setValue(temp);
+      this.form.controls['idTransaksi'].setValue(temp);
       this.form.controls['idTransaksi'].setValue(temp);
     } else {
       this.form.reset();
@@ -268,5 +284,4 @@ export class TransaksiTelkomComponent implements OnInit {
     this.transaksiform = false;
     this.GetConfirmDelete();
   }
-
 }
