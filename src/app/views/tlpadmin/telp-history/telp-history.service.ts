@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class TelpHistoryService {
   findAll(): Observable<any> {
-    return this.http.get('http://localhost:8080/historytelkom/findAllPlan', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/historytelkom/findAllPlan', {
       responseType: 'json',
     });
   }
@@ -17,7 +17,7 @@ export class TelpHistoryService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/historytelkom/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/historytelkom/';
     return this.http.post<any>(urlPost, data, { headers });
   }
 
@@ -26,7 +26,7 @@ export class TelpHistoryService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/historytelkom/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/historytelkom/';
     return this.http.put<any>(urlPost, data, { headers });
   }
 
@@ -36,12 +36,12 @@ export class TelpHistoryService {
       Accept: 'application/json',
     });
     return this.http.delete(
-      'http://localhost:8080/historytelkom/deleteById?id=' + id
+      'https://lokakarya-spring-boot-production.up.railway.app/historytelkom/deleteById?id=' + id
     );
   }
 
   getNominal(): Observable<any> {
-    return this.http.get('http://localhost:8080/historytelkom/sumAll', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/historytelkom/sumAll', {
       responseType: 'json',
     });
   }

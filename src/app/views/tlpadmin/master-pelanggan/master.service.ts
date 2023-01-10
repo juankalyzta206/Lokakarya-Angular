@@ -7,19 +7,19 @@ import { Observable } from 'rxjs';
 })
 export class MasterService {
   findAll(): Observable<any> {
-    return this.http.get('http://localhost:8080/masterpelanggan/findAllPlan', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/masterpelanggan/findAllPlan', {
       responseType: 'json',
     });
   }
 
   findAllUserId(): Observable<any> {
-    return this.http.get('http://localhost:8080/users/findAllPlan', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/users/findAllPlan', {
       responseType: 'json',
     });
   }
 
   findUsersByUserId(userId: number): Observable<any> {
-    return this.http.get('http://localhost:8080/users/findById?id=' + userId, {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/users/findById?id=' + userId, {
       responseType: 'json',
     });
   }
@@ -29,7 +29,7 @@ export class MasterService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/masterpelanggan/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/masterpelanggan/';
     return this.http.post<any>(urlPost, data, { headers });
   }
 
@@ -38,7 +38,7 @@ export class MasterService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/masterpelanggan/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/masterpelanggan/';
     return this.http.put<any>(urlPost, data, { headers });
   }
 
@@ -48,12 +48,12 @@ export class MasterService {
       Accept: 'application/json',
     });
     return this.http.delete(
-      'http://localhost:8080/masterpelanggan/deleteById?id=' + id
+      'https://lokakarya-spring-boot-production.up.railway.app/masterpelanggan/deleteById?id=' + id
     );
   }
 
   findUserById(userId: number): Observable<any> {
-    return this.http.get(`http://localhost:8080/users/findById?id=${userId}`, {
+    return this.http.get(`https://lokakarya-spring-boot-production.up.railway.app/users/findById?id=${userId}`, {
       responseType: 'json',
     });
   }

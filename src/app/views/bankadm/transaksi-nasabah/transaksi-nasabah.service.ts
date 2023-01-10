@@ -7,17 +7,17 @@ import { Observable } from 'rxjs';
 })
 export class TransaksiNasabahService {
   findAll(): Observable<any> {
-    return this.http.get('http://localhost:8080/transfernasabah/findAllPlan', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/findAllPlan', {
       responseType: 'json',
     });
   }
-
+//https://lokakarya-spring-boot-production.up.railway.app
   addTransaksiNasabah(data: any): Observable<any> {
     var headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/transfernasabah/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/';
     return this.http.post<any>(urlPost, data, { headers });
   }
 
@@ -26,7 +26,7 @@ export class TransaksiNasabahService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/transfernasabah/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/';
     return this.http.put<any>(urlPost, data, { headers });
   }
 
@@ -36,7 +36,7 @@ export class TransaksiNasabahService {
       Accept: 'application/json',
     });
     return this.http.delete(
-      'http://localhost:8080/transfernasabah/deleteById?id=' + id
+      'https://lokakarya-spring-boot-production.up.railway.app/transfernasabah/deleteById?id=' + id
     );
   }
 

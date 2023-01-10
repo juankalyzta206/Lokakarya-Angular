@@ -7,12 +7,12 @@ import { Observable } from 'rxjs';
 })
 export class TransaksiTelkomService {
   findAll(): Observable<any> {
-    return this.http.get('http://localhost:8080/transaksitelkom/findStatus1', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/findStatus1', {
       responseType: 'json',
     });
   }
   getTotal(): Observable<any> {
-    return this.http.get('http://localhost:8080/transaksitelkom/sumAll', {
+    return this.http.get('https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/sumAll', {
       responseType: 'json',
     });
   }
@@ -22,7 +22,7 @@ export class TransaksiTelkomService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/transaksitelkom/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/';
     return this.http.post<any>(urlPost, data, { headers });
   }
 
@@ -31,7 +31,7 @@ export class TransaksiTelkomService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const urlPost = 'http://localhost:8080/transaksitelkom/';
+    const urlPost = 'https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/';
     return this.http.put<any>(urlPost, data, { headers });
   }
 
@@ -41,7 +41,7 @@ export class TransaksiTelkomService {
       Accept: 'application/json',
     });
     return this.http.delete(
-      'http://localhost:8080/transaksitelkom/deleteById?id=' + id
+      'https://lokakarya-spring-boot-production.up.railway.app/transaksitelkom/deleteById?id=' + id
     );
   }
 

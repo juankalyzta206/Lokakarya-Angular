@@ -11,7 +11,7 @@ export class LoginService {
   //ambil data dari database
   login(username: String, password: String): Observable<any> {
     return this.http.get(
-      'http://localhost:8080/users/login?identity=' +
+      'https://lokakarya-spring-boot-production.up.railway.app/users/login?identity=' +
         username +
         '&password=' +
         password,
