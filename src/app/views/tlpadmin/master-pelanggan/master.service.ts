@@ -9,6 +9,26 @@ import { environment } from 'src/environments/environment';
 export class MasterService {
   baseUrl = environment.BASE_API_URL;
 
+  getPage(
+    page: number | undefined,
+    size: number | undefined,
+    search: any
+  ): Observable<any> {
+    let bodyString = JSON.stringify(search); // Stringify payload
+    console.log(bodyString);
+
+    return this.http.get(
+      this.baseUrl +
+        'masterpelanggan/findAllWithPagination?page=' +
+        page +
+        '&size=' +
+        size,
+      {
+        responseType: 'json',
+      }
+    );
+  }
+
   findAll(): Observable<any> {
     return this.http.get(this.baseUrl + 'masterpelanggan/findAllPlan', {
       responseType: 'json',
@@ -61,5 +81,10 @@ export class MasterService {
     });
   }
 
+  download(): Observable<any> {
+    return this.http.get(this.baseUrl + 'masterpelanggan/exportToPdfALL', {
+      responseType: 'blob',
+    });
+  }
   constructor(private http: HttpClient) {}
 }

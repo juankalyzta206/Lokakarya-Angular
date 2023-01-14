@@ -11,6 +11,23 @@
     border: 1px solid white;
 }
 
+.p-button-custom {
+    border: 1px solid white;
+    background-color: rgb(219, 219, 219);
+    color: black
+}
+
+.p-button-custom:hover {
+    background-color: rgb(165, 165, 165);
+    color: black
+}
+
+.btn-caption {
+    float: right;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 .buttonStyle:enabled:hover {
     background: #ffab2c;
 }
@@ -35,4 +52,21 @@
     text-align: center;
     margin-top: -50px;
     margin-right: 5px;
+}
+
+td {
+    padding: 0.5rem 1rem !important;
+}
+
+@media (max-width: 768px) {
+    .responsive-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 0;
+        padding-left: 1px;
+        padding-right: 10px;
+        /* hide label */
+    }
 }

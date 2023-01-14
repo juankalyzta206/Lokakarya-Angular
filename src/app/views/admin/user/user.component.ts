@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../service/user.service';
 import { UserInterface } from './user-interface';
-import { ConfirmationService, ConfirmEventType, MessageService } from 'primeng/api';
+import { ConfirmationService, ConfirmEventType, LazyLoadEvent, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { SearchRequest } from 'src/app/models/search.request.model';
+import { SearchCriteria } from 'src/app/models/search.crtiteria.model';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-user',
@@ -20,6 +23,8 @@ export class UserComponent implements OnInit {
 
   //deklarasi variabel
   public users: any[] = [];
+  public listUser: any = [];
+  currentPage: number = 0;
   userform: boolean = false;
   header: string = '';
   isEdit: boolean = false;
@@ -44,6 +49,10 @@ export class UserComponent implements OnInit {
   searchQuery: string = '';
   loading: boolean = true;
   currentDate = `${this.now.getFullYear()}-${this.padTo2Digits(this.now.getMonth() + 1)}-${this.padTo2Digits(this.now.getDate())}`;
+
+  totalRows: number = 0;
+  private isDirty: boolean = false;
+
 
   //format tanggal angka 2 digit
   padTo2Digits(num: number) {
@@ -71,6 +80,7 @@ export class UserComponent implements OnInit {
 
   //Menampilkan form edit data
   showEdit(reference: UserInterface) {
+    console.log(this.currentPage);
     this.isEdit = true;
     this.isAdd = false;
     this.isDelete = false;
@@ -103,7 +113,7 @@ export class UserComponent implements OnInit {
   form: FormGroup = new FormGroup({
     userId: new FormControl(0),
     username: new FormControl(''),
-    password: new FormControl(''),
+    // password: new FormControl(''),
     nama: new FormControl(''),
     alamat: new FormControl(''),
     email: new FormControl(''),
@@ -205,16 +215,27 @@ export class UserComponent implements OnInit {
 
   //mengambil data dari service
   getData() {
+    let searchReq = new SearchRequest();
+    searchReq._offSet = 0;
+    searchReq._page = 0;
+    searchReq._size = 5;
+    searchReq._sortField = 'userId';
+    searchReq._sortOrder = 'DESC';
+    searchReq._filters = [];
+
+    this.getUserData(searchReq);
+
     this.userService.get().subscribe({
       next: (res: any) => {
-        this.users = res.data;
-        this.loading = false;
-        // console.log(res.data);
+        this.listUser = res.data;
+        // this.loading = false;
+        // console.log(res);
       },
       error: (error) => {
         console.error('ini error: ', error);
       },
     });
+
   }
 
   ngOnInit(): void {
@@ -231,14 +252,9 @@ export class UserComponent implements OnInit {
           Validators.maxLength(20),
         ],
       ],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(4),
-          Validators.maxLength(20),
-        ],
-      ],
+      // password: ['',[
+      //   Validators.required,
+      // ],],
       email: ['', [Validators.required, Validators.email]],
       nama: ['', [Validators.required]],
       alamat: [''],
@@ -372,4 +388,110 @@ export class UserComponent implements OnInit {
   clear(table: Table) {
     table.clear();
   }
+
+  nextPage(event: LazyLoadEvent) {
+    console.log(event.filters);
+    if (this.isDirty) {
+      alert('You have unsaved changes!!!');
+      console.log(event);
+    } else {
+      let searchReq = new SearchRequest();
+      searchReq._offSet = event.first;
+      searchReq._page = event.first;
+      searchReq._size = event.rows;
+      searchReq._sortField =
+        event.sortField === undefined ? 'createdDate' : event.sortField;
+      searchReq._sortOrder = event.sortOrder === 1 ? 'ASC' : 'DESC';
+      searchReq._filters = [];
+
+      let currentPage = event.first;
+      if (event.first !== undefined && event.rows !== undefined) {
+        searchReq._page = Math.ceil(event.first / event.rows);
+        currentPage = Math.ceil(event.first / event.rows);
+      }
+
+      //Process filter object
+      let filterObj = <any>event.filters;
+      console.log('filter by : ', filterObj);
+      let fieldName: string = '';
+      let fieldValue: string = '';
+
+      if (filterObj !== undefined) {
+        if (filterObj.hasOwnProperty('username')) {
+          fieldName = 'username';
+          if (filterObj['username'][0]['value'] == null) {
+            if (typeof filterObj['global'] != 'undefined') {
+              fieldValue = filterObj['global']['value'];
+            } else {
+              fieldValue = '';
+            }
+          } else {
+            fieldValue = filterObj['username'][0]['value'];
+          }
+
+          let criteria = new SearchCriteria();
+          criteria._name = fieldName;
+          criteria._value = fieldValue;
+          searchReq._filters.push(criteria);
+        }
+        // if (filterObj.hasOwnProperty('createdBy')) {
+        //   fieldName = 'createdBy';
+        //   if (filterObj['createdBy'][0]['value'] == null) {
+        //     if (typeof filterObj['global'] != 'undefined') {
+        //       fieldValue = filterObj['global']['value'];
+        //     } else {
+        //       fieldValue = '';
+        //     }
+        //   } else {
+        //     fieldValue = filterObj['createdBy'][0]['value'];
+        //   }
+        //   let criteria = new SearchCriteria();
+        //   criteria._name = fieldName;
+        //   criteria._value = fieldValue;
+        //   searchReq._filters.push(criteria);
+        // }
+      }
+
+      //console.log(JSON.stringify(searchReq));
+
+      this.getUserData(searchReq);
+    }
+  }
+
+  getUserData(
+    search?: any
+  ) {
+    console.log(search);
+    this.loading = true;
+    this.userService.post(search).subscribe({
+      next: (res: any) => {
+        this.users = res.data;
+        this.loading = false;
+        this.totalRows = res.totalRowCount;
+        // console.log(res.data);
+      },
+      error: (error) => {
+        console.error('ini error: ', error);
+      },
+    });
+  }
+
+  // file: any;
+
+  downloadData(): void {
+    this.userService.getFilePdf().subscribe({
+      next: (resp) => {
+        let binaryData = [];
+        binaryData.push(resp);
+        var fileUrl = URL.createObjectURL(new Blob(binaryData, { type: 'application/pdf' }));
+        window.open(fileUrl);
+        // saveAs(resp, 'Data-User.pdf');
+        console.log(resp);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
 }

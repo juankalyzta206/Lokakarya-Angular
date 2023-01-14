@@ -17,6 +17,56 @@ export class UserService {
     })
   }
 
+  getFilePdf():Observable<any>{
+    const token = 'my JWT';
+    const headers = new HttpHeaders().set('authorization','Bearer '+token);
+    return this.http.get(this.baseUrl + 'users/exportToPdfALL',
+    {headers, responseType: 'blob'}
+    )
+  }
+
+  // getPost(data: any): Observable<any> {
+  //   var headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     Accept: 'application/json',
+  //   });
+  //   const urlPost = this.baseUrl + 'users/findAllWithPaginationAndFilter';
+  //   return this.http.post<any>(urlPost,data, { headers});
+  // }
+
+  post(search: any): Observable<any> {
+    let bodyString = JSON.stringify(search);
+    // console.log(bodyString) // Stringify payload
+    var headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        });
+    return this.http.post(
+      this.baseUrl + 'users/findAllWithPaginationAndFilter',
+      bodyString, { headers}
+    );
+  }
+
+  getPage(
+    page: number | undefined,
+    size: number | undefined,
+    search: any
+  ): Observable<any> {
+    let bodyString = JSON.stringify(search); // Stringify payload
+    console.log(bodyString);
+
+    return this.http.get(
+      this.baseUrl + 
+        'users/findAllWithPagination?page=' +
+        page +
+        '&size=' +
+        size,
+      {
+        responseType: 'json',
+      }
+    );
+  }
+
   add(data: any): Observable<any> {
     var headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -41,5 +91,13 @@ export class UserService {
       Accept: 'application/json',
     });
     return this.http.delete(this.baseUrl + 'users/deleteById?id=' + id);
+  }
+
+  download(): Observable<any>{
+    return this.http.get(
+      this.baseUrl + 'users/exportToPdfALL',{
+        responseType: 'blob',
+      }
+    );
   }
 }

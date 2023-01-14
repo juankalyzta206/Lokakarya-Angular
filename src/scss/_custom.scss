@@ -63,8 +63,14 @@ button {
 //     padding-bottom: 5rem !important;
 // }
 
-.pi-times {
-    color: white;
+// .pi-times {
+//     color: white;
+// }
+
+.iconClose {
+    .pi-times {
+        color: white;
+    }
 }
 
 .borderStyle {
@@ -82,4 +88,17 @@ button {
 .p-datatable .p-datatable-thead>tr>th {
     text-align: center !important;
 }
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loading-bg{
+    background: white;
+}
+
 

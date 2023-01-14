@@ -10,11 +10,48 @@ export class MasterBankService {
 
   baseUrl = environment.BASE_API_URL;
 
+  //service download pdf
+  downloadMasterBank(): Observable<any>{
+    return this.http.get(this.baseUrl + 'masterbank/exportToPdfALL',{
+      responseType: "blob",
+    })
+  }
+
   //service find all data nasabah
   findAll(): Observable<any> {
     return this.http.get(this.baseUrl + 'masterbank/findAllPlan', {
       responseType: "json",
     })
+  }
+
+  //service get data all nasabah paging 
+  get(
+    page: number | undefined,
+    size: number | undefined,
+    search: any
+  ): Observable<any>{
+    let bodyString = JSON.stringify(search);
+    console.log(bodyString);
+
+    return this.http.get(
+      this.baseUrl + `masterbank/findAllWithPagination?page=${page}&size=${size}`,
+      {
+        responseType: 'json'
+      }
+    );
+  }
+
+  //service get all data nasabah paging and filter
+  pagingAndFilter(search:any):Observable<any>{
+    let bodyString = JSON.stringify(search);
+    var headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post(
+      this.baseUrl + 'masterbank/findAllWithPaginationAndFilter',
+      bodyString,{headers}
+    );
   }
 
   //service add data nasabah baru

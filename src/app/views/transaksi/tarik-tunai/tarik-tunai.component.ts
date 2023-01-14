@@ -68,7 +68,7 @@ export class TarikTunaiComponent implements OnInit {
   // classButton: string = "";
   // bgConfirmColor: string = "";
   submitted: boolean = false;
-  cekNorek: boolean = false;
+  cekError: boolean = false;
   // merah: any = 'background-color: aqua;';
   tampilForm: boolean = false;
   stateOptions1: any = [];
@@ -81,6 +81,7 @@ export class TarikTunaiComponent implements OnInit {
   tampilFormPilihanNominal: boolean = false;
   errorMessage:string = '';
   tampilDataNasabah:boolean = false;
+  loading:boolean = false;
   // //UNTUK MENGUBAH KE FORMAT RUPIAH
   // formattedValue = this.currencyPipe.transform(this.nominal, 'IDR', true);
 
@@ -97,11 +98,13 @@ export class TarikTunaiComponent implements OnInit {
       this.confirmationService.confirm({
         message: '<b>Konfirmasi Tarik Tunai Dengan Nominal : Rp. </b>' + this.currencyPipe.transform(this.nominal, 'IDR ', 'symbol', '3.2-2'),
         accept: () => {
+          this.loading = true;
           let data = JSON.stringify(this.norek, this.nominal);
           console.log(data);
           console.log(this.norek, this.nominal);
           this.transaksiService.getTarikTunai(this.norek, this.nominal).subscribe({
             next: (resp: any) => {
+              this.loading = false;
               // this.messageSuccess();
               this.tampilForm = false;
               this.display1 = true;
@@ -112,25 +115,26 @@ export class TarikTunaiComponent implements OnInit {
 
             },
             error: (error) => {
-              this.cekNorek = true;
+              this.loading = false;
+              this.cekError = true;
               this.tampilForm = false;
               this.errorMessage = error.error.message
               // this.messageErrorNoRek();
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: (error.error.message) }); console.log(error);
+              // this.messageService.add({ severity: 'error', summary: 'Error', detail: (error.error.message) }); console.log(error);
               // alert('Id tidak ditemukan')
             },
           });
         },
-        reject: (type: any) => {
-          switch (type) {
-            case ConfirmEventType.REJECT:
-              this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected' });
-              break;
-            case ConfirmEventType.CANCEL:
-              this.messageService.add({ severity: 'warn', summary: 'Cancelled', detail: 'You have cancelled' });
-              break;
-          }
-        }
+        // reject: (type: any) => {
+        //   switch (type) {
+        //     case ConfirmEventType.REJECT:
+        //       this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected' });
+        //       break;
+        //     case ConfirmEventType.CANCEL:
+        //       this.messageService.add({ severity: 'warn', summary: 'Cancelled', detail: 'You have cancelled' });
+        //       break;
+        //   }
+        // }
       });
     }
 
@@ -147,7 +151,7 @@ export class TarikTunaiComponent implements OnInit {
   //RESET FORM DAN SET FALSE PADA BOOLEAN
   onReset() {
     this.submitted = false;
-    this.cekNorek = false;
+    this.cekError = false;
     this.display1 = false;
     this.form.reset();
     this.tampilForm = false;
@@ -157,6 +161,11 @@ export class TarikTunaiComponent implements OnInit {
     this.tampilDataNasabah= false;
   }
 
+  //RESET PADA DIALOG ERROR
+  onResetError(){
+    this.cekError = false;
+  }
+
   //PANGGIL SEMUA DATA NASABAH
   showNasabah(): void {
     this.submitted = true;
@@ -164,16 +173,19 @@ export class TarikTunaiComponent implements OnInit {
       return;
     }
     else {
+      this.loading = true;
       let data = JSON.stringify(this.norek);
       console.log(data);
       this.transaksiService.getNasabah(this.norek).subscribe({
         next: (resp: any) => {
+          this.loading = false;
           this.tampilDataNasabah= true;
           this.nasabah[0] = resp.data;
           console.log(resp);
           console.log(resp.data);
         },
         error: (error) => {
+          this.loading = false;
           this.messageError();
           console.log(error);
           // alert('Id tidak ditemukan')
@@ -215,5 +227,27 @@ export class TarikTunaiComponent implements OnInit {
   onBatalFormTarik() {
     this.tampilForm = false;
   }
+
+    //DOWNLOAD TARIK TUNAI PDF
+    downloadTarikTunaiPDF(idHistory:any) {
+      this.loading = true;
+      this.transaksiService.downloadTarikTunai(idHistory).subscribe({
+        next: (resp) => {
+          this.loading = false;
+          let binaryData = [];
+          binaryData.push(resp);
+          var fileUrl = URL.createObjectURL(new Blob(binaryData, { type: 'application/pdf'}));
+          window.open(fileUrl);
+          // saveAs(resp, 'Data-Setor.pdf')
+          console.log(resp);        
+        },
+        error: (error) => {
+          this.loading = false;
+          console.log(error);
+          this.errorMessage = error.error.message;
+          
+        },
+      })
+    }
 
 }

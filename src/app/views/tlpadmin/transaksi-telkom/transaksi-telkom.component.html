@@ -1,29 +1,4 @@
 <c-col xs="12">
-  <div class="mb-4" style="text-align: right; margin: 15px 15px 0px 15px">
-    <button
-      type="button"
-      pButton
-      class="p-button-warning btn-sm"
-      (click)="showAdd()"
-    >
-      <i style="color: white" class="pi pi-plus"></i>Tambah Transaksi
-    </button>
-  </div>
-
-  <!-- section confirmation -->
-  <p-confirmDialog #cd [style]="{ width: '50vw' }">
-    <ng-template pTemplate="footer">
-      <!-- <button type="button" pButton icon="pi pi-times" label="No" (click)="cd.reject()"></button> -->
-      <button
-        type="button"
-        pButton
-        icon="pi pi-check"
-        label="OK"
-        (click)="cd.accept()"
-      ></button>
-    </ng-template>
-  </p-confirmDialog>
-
   <!-- section form -->
   <p-dialog
     header="{{ header }}"
@@ -83,6 +58,7 @@
               class="form-select"
               formControlName="idPelanggan"
               aria-label="select pelanggan"
+              [ngClass]="{ 'is-invalid': submitted && f['idPelanggan'].errors }"
             >
               <option value="">(choose)</option>
               <option
@@ -101,8 +77,39 @@
               </div>
             </div>
 
+            <!-- coba primeng -->
+
+            <!-- <label>Nama</label>
+            <br />
+            <p-dropdown
+              class="dropdowntransaksi"
+              [options]="listIdPelanggan"
+              formControlName="idPelanggan"
+              [(ngModel)]="valIdPelanggan"
+              placeholder="Pilih nama pelanggan"
+              optionLabel="nama"
+              optionValue="idPelanggan"
+              [ngClass]="{ 'is-invalid': submitted && f['idPelanggan'].errors }"
+            ></p-dropdown>
+
+            <div
+              *ngIf="submitted && f['idPelanggan'].errors"
+              class="invalid-feedback"
+            >
+              <div *ngIf="f['idPelanggan'].errors['required']">
+                ID Pelanggan kosong
+              </div>
+            </div>
+            <br /> -->
+
             <label>Bulan Tagihan</label>
-            <select class="form-select" formControlName="bulanTagihan">
+            <select
+              class="form-select"
+              formControlName="bulanTagihan"
+              [ngClass]="{
+                'is-invalid': submitted && f['bulanTagihan'].errors
+              }"
+            >
               <option value="">(choose)</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -129,7 +136,13 @@
             <label>Tahun Tagihan</label>
             <!-- <input type="number" formControlName="tahunTagihan" class="form-control"
                             [ngClass]="{'is-invalid':submitted && f['tahunTagihan'].errors}" /> -->
-            <select class="form-select" formControlName="tahunTagihan">
+            <select
+              class="form-select"
+              formControlName="tahunTagihan"
+              [ngClass]="{
+                'is-invalid': submitted && f['tahunTagihan'].errors
+              }"
+            >
               <option value="">(choose)</option>
               <option value="2022">2022</option>
               <option value="2023">2023</option>
@@ -164,14 +177,9 @@
                         </div> > -->
 
             <label>Status</label>
-            <input
-              type="number"
-              formControlName="status"
-              class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && f['status'].errors }"
-              id="numeric"
-              value="1"
-            />
+            <select class="form-select" formControlName="status">
+              <option value="1">Belum Lunas</option>
+            </select>
 
             <!-- <label>Hire Date</label>
                           <input type="date" formControlName="hireDate" class="form-control"
@@ -206,6 +214,7 @@
               Reset
             </button>
           </div>
+
           <div *ngIf="isDelete" class="form-group mt-4" align="center">
             <button
               pButton
@@ -239,11 +248,18 @@
       >
         <p-table
           #dt
-          [value]="transaksi"
+          [value]="transaksiTelkom"
+          dataKey="id"
           [paginator]="true"
           [rows]="5"
+          [lazy]="true"
+          (onLazyLoad)="nextPage($event)"
           [rowsPerPageOptions]="[5, 10, 15, 20]"
+          [totalRecords]="totalRows"
           [globalFilterFields]="['idTransaksi', 'nama']"
+          [loading]="loading"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         >
           <ng-template pTemplate="caption">
             <div class="flex">
@@ -259,6 +275,24 @@
                   placeholder="Cari ID transaksi atau nama pelanggan"
                 />
               </span>
+              <!-- button download -->
+              <button
+                type="button"
+                pButton
+                class="p-button-warning btn-sm btn-add"
+                (click)="showAdd()"
+              >
+                <i style="color: white" class="pi pi-plus"></i>Tambah Transaksi
+              </button>
+              <button
+                pButton
+                pRipple
+                type="button"
+                label="Download File"
+                icon="pi pi-arrow-down"
+                class="p-button-custom"
+                (click)="getDownload()"
+              ></button>
             </div>
           </ng-template>
           <ng-template pTemplate="header">
@@ -302,12 +336,7 @@
               <td class="text-center">
                 {{ transaksi.uang | currency : "IDR " : "symbol" : "3.2-2" }}
               </td>
-              <td class="text-center" *ngIf="transaksi.status == 1">
-                Belum Lunas
-              </td>
-              <td class="text-center" *ngIf="transaksi.status == 2">
-                {{ transaksi.status }}
-              </td>
+              <td class="text-center">Belum Lunas</td>
               <td class="text-center">
                 <button
                   pButton
@@ -357,3 +386,62 @@
     </c-card-body>
   </c-card>
 </c-col>
+
+<p-confirmDialog #cd [style]="{ width: '50vw' }">
+  <ng-template pTemplate="footer">
+    <button
+      *ngIf="isDelete || isEdit"
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-times"
+      label="No"
+      class="p-button-text"
+      (click)="cd.reject()"
+    ></button>
+    <p-button
+      *ngIf="isDelete || isEdit"
+      type="button"
+      icon="pi pi-check"
+      label="Yes"
+      styleClass="p-button-primary"
+      (click)="cd.accept()"
+    ></p-button>
+    <p-button
+      *ngIf="isAdd"
+      type="button"
+      icon="pi pi-check"
+      label="Ok"
+      styleClass="p-button-primary"
+      (click)="cd.accept()"
+    ></p-button>
+  </ng-template>
+</p-confirmDialog>
+
+<!-- TAMPIL DIALOG (ERROR) TIDAK BISA ADD  -->
+<p-dialog
+  #cek
+  header="Gagal menambahkan"
+  [(visible)]="cekErrorAdd"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <c-card-body>
+    <div>
+      <p><b>Pengguna sudah memiliki tagihan</b></p>
+    </div>
+  </c-card-body>
+  <ng-template pTemplate="footer">
+    <button
+      type="button"
+      class="p-button-danger"
+      pButton
+      icon="pi pi-times"
+      label="Tutup"
+      (click)="onResetNew()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- <p-toast></p-toast> -->

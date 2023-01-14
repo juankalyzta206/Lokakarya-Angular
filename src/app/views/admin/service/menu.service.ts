@@ -17,6 +17,26 @@ export class MenuService {
     })
   }
 
+  getPage(
+    page: number | undefined,
+    size: number | undefined,
+    search: any
+  ): Observable<any> {
+    let bodyString = JSON.stringify(search); // Stringify payload
+    console.log(bodyString);
+
+    return this.http.get(
+      this.baseUrl +
+        'menu/findAllWithPagination?page=' +
+        page +
+        '&size=' +
+        size,
+      {
+        responseType: 'json',
+      }
+    );
+  }
+
   add(data: any): Observable<any> {
     var headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -41,5 +61,13 @@ export class MenuService {
       Accept: 'application/json',
     });
     return this.http.delete(this.baseUrl + 'menu/deleteById?id=' + id);
+  }
+
+  getFilePdf():Observable<any>{
+    const token = 'my JWT';
+    const headers = new HttpHeaders().set('authorization','Bearer '+token);
+    return this.http.get(this.baseUrl + 'menu/exportToPdfALL',
+    {headers, responseType: 'blob'}
+    )
   }
 }

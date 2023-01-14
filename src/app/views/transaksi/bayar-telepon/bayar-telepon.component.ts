@@ -67,6 +67,7 @@ export class BayarTeleponComponent implements OnInit {
   errorMessage:string = '';
   tampilDatatagihan:boolean = false;
   cekErrorBulanTagihan:boolean =false;
+  loading:boolean = false;
 
   //FUNCTION BAYAR TELEPON SEKALIGUS
   onBayarTelepon() {
@@ -78,6 +79,7 @@ export class BayarTeleponComponent implements OnInit {
       this.confirmationService.confirm({
         message: '<b>Konfirmasi Bayar Telepon : </b>',
         accept: () => {
+          this.loading = true;
           let data = JSON.stringify(this.noRekening, this.noTelepon);
           console.log(data);
           console.log(this.noRekening);
@@ -86,6 +88,7 @@ export class BayarTeleponComponent implements OnInit {
 
           this.transaksiService.getBayartelepon(this.noRekening, this.noTelepon).subscribe({
             next: (resp: any) => {
+              this.loading = false;
               this.display1 = true;
               this.tampilForm = false;
               this.nasabah = resp.data;
@@ -95,6 +98,7 @@ export class BayarTeleponComponent implements OnInit {
 
             },
             error: (error) => {
+              this.loading = false;
               this.cekError = true;
               // this.messageError();
               console.log(error);
@@ -128,6 +132,7 @@ export class BayarTeleponComponent implements OnInit {
       this.confirmationService.confirm({
         message: '<b>Konfirmasi Bayar Telepon : </b>',
         accept: () => {
+          this.loading = true;
           let data = JSON.stringify(this.noRekening, this.noTelepon, this.bulanTagihan);
           console.log(data);
           console.log(this.noRekening);
@@ -136,6 +141,7 @@ export class BayarTeleponComponent implements OnInit {
 
           this.transaksiService.postBayarteleponPerBulan(this.noRekening, this.noTelepon, this.bulanTagihan).subscribe({
             next: (resp: any) => {
+              this.loading = false;
               //boolean dialog
               this.display2 =true;
               this.nasabah = resp.data;
@@ -145,6 +151,7 @@ export class BayarTeleponComponent implements OnInit {
 
             },
             error: (error) => {
+              this.loading = false;
               this.cekErrorBulanTagihan = true
               console.log(error);
               // this.errorMessage = error.error.message
@@ -186,6 +193,11 @@ export class BayarTeleponComponent implements OnInit {
     this.form.controls['noTelepon'].enable();
   }
 
+  //KLIK BATAL SAAT DIALOG ERROR
+  onBatalError(){
+    this.cekError =false;
+  }
+
   //PANGGIL DATA NASABAH
   showNasabah(): void {
     this.submitted = true;
@@ -193,16 +205,19 @@ export class BayarTeleponComponent implements OnInit {
       return;
     }
     else {
+      this.loading = true;
       let data = JSON.stringify(this.noRekening, this.noTelepon);
       console.log(data);
       this.transaksiService.findBayarTelepon(this.noRekening, this.noTelepon).subscribe({
         next: (resp: any) => {
-          this.tampilDatatagihan = true
+          this.loading = false;
+          this.tampilDatatagihan = true;
           this.nasabah = resp.data;
           console.log(resp);
           console.log(resp.data);
         },
         error: (error) => {
+          this.loading = false;
           this.cekError = true;
           this.errorMessage = error.error.message;
           console.log(error);
@@ -219,16 +234,19 @@ export class BayarTeleponComponent implements OnInit {
       return;
     }
     else {
+      this.loading = true;
       let data = JSON.stringify(this.noRekening, this.noTelepon);
       console.log(data);
       this.transaksiService.getTotalTagihan(this.noRekening, this.noTelepon).subscribe({
         next: (resp: any) => {
+          this.loading = false;
           // this.display1 = true;
           this.totalTagihan = resp.data;
           console.log(resp);
           console.log(resp.data);
         },
         error: (error) => {
+          this.loading = false;
           this.cekError = true;
           this.errorMessage = error.error.message;
           console.log(error);
@@ -254,22 +272,43 @@ export class BayarTeleponComponent implements OnInit {
   }
 
   //MENAMPILKAN FORM BAYAR TELEPON PER-BULAN
-  showFormBayarTeleponPerBulan(){
+  showFormBayarTeleponPerBulan(bulanTagihan : any){
     this.tampilFormPerBulan = true;
     this.form.controls['noRekening'].disable();
     this.form.controls['noTelepon'].disable();
-    // this.form.controls['bulanTagihan'].disable();
-    
+    this.form.controls['bulanTagihan'].setValue(bulanTagihan);
+    this.form.controls['bulanTagihan'].disable();
+    console.log(bulanTagihan);
   }
 
 
   //BATAL FORM BAYAR TELEPON
   onBatal(){
     this.tampilForm = false;
+    this.tampilFormPerBulan = false;
     this.form.controls['noRekening'].enable();
     this.form.controls['noTelepon'].enable();
-    
   }
   
-
+      //DOWNLOAD TRANSFER PDF
+      downloadBayarTeleponPDF(idHistoryBank:any, idHistoryTelepon:any ) {
+        this.loading = true;
+        this.transaksiService.downloadBayarTelepon(idHistoryBank, idHistoryTelepon).subscribe({
+          next: (resp) => {
+            this.loading = false;
+            let binaryData = [];
+            binaryData.push(resp);
+            var fileUrl = URL.createObjectURL(new Blob(binaryData, { type: 'application/pdf'}));
+            window.open(fileUrl);
+            // saveAs(resp, 'Data-Setor.pdf')
+            console.log(resp);        
+          },
+          error: (error) => {
+            this.loading = false;
+            console.log(error);
+            this.messageService=error.error.message;
+            
+          },
+        });
+      }
 }

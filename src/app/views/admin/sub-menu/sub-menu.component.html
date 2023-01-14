@@ -1,12 +1,8 @@
 <!-- menambahkan button add data -->
 <c-col xs="12">
-    <div class="mb-4" style="text-align:right; margin:15px 15px 0px 15px;">
-        <button pButton pRipple type="button" label="Add Hak Sub Menu" icon="pi pi-plus" class="p-button-warning"
-            (click)="showAdd()"></button>
-    </div>
 
     <!-- button confirm ketika delete data -->
-    <p-confirmDialog #cd [style]="{width: '50vw'}">
+    <p-confirmDialog #cd [style]="{width: '50vw'}" styleClass="iconClose">
         <ng-template pTemplate="footer">
             <button *ngIf="isDelete || isEdit" pButton pRipple type="button" icon="pi pi-times" label="No"
                 class="p-button-text" (click)="cd.reject()"></button>
@@ -25,9 +21,9 @@
 
         <!-- section u show data tabel -->
         <c-card-body>
-            <p-table #dt [value]="subMenu" dataKey="id" [paginator]="true" [rows]="5"
-                [rowsPerPageOptions]="[5, 10, 15, 20]" [globalFilterFields]="['nama','subMenuId',]" [loading]="loading"
-                [showCurrentPageReport]="true"
+            <p-table #dt [value]="subMenu" dataKey="id" [paginator]="true" [rows]="5" [lazy]="true"
+            (onLazyLoad)="nextPage($event)" [rowsPerPageOptions]="[5, 10, 15, 20]" [totalRecords]="totalRows"
+            [globalFilterFields]="['nama','subMenuId',]" [loading]="loading" [showCurrentPageReport]="true"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
                 <ng-template pTemplate="caption">
                     <div class="flex">
@@ -37,7 +33,12 @@
                                 (input)="dt.filterGlobal($any($event.target)?.value, 'contains')" placeholder="Search">
                         </span>
                         <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash"
-                            (click)="clear(dt)"></button>
+            (click)="clear(dt)"></button>
+        <button pButton pRipple type="button" label="Add Sub menu" icon="pi pi-plus" class="btn-caption"
+            (click)="showAdd()"></button> 
+        <button pButton pRipple type="button" styleClass="p-button-lg" label="Download" iconPos="right"
+            icon="pi pi-arrow-down" class="p-button-custom btn-caption"
+            (click)="getDownload()"></button>
                     </div>
                 </ng-template>
                 <ng-template pTemplate="header">
@@ -165,7 +166,7 @@
 
 <!-- section show data tabel pada saat add dan edit   -->
 <p-dialog header="Sub Menu Form" [(visible)]="subMenuform" [responsive]="true" showEffect="fade" [modal]="true"
-    [closable]="true" [dismissableMask]="true">
+    [closable]="true" [dismissableMask]="true" styleClass="iconClose">
     <div>
         <hr>
         <div *ngIf="isEdit">
@@ -190,7 +191,6 @@
                         </div>
                     </div>
                     <br>
-                    <br>
                     <div class="row container">
                         <div class="col-md-5">
                             <label><b>URL</b></label>
@@ -208,7 +208,7 @@
 
                     <div class="row container">
                         <div class="col-md-5">
-                            <label><b>Menu ID</b></label>
+                            <label><b>Menu</b></label>
                         </div>
                         <div class="col-md-1"><b>:</b></div>
                         <div class="col-md-6">

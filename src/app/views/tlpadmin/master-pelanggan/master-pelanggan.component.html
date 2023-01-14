@@ -1,14 +1,6 @@
+<!-- button download -->
+
 <c-col xs="12">
-  <div class="mb-4" style="text-align: right; margin: 15px 15px 0px 15px">
-    <button
-      pButton
-      type="button"
-      class="p-button-warning btn-sm"
-      (click)="showAdd()"
-    >
-      <i style="color: white" class="pi pi-plus"></i> Tambah Pelanggan
-    </button>
-  </div>
   <!-- section confirmation -->
   <p-confirmDialog #cd [style]="{ width: '50vw' }">
     <ng-template pTemplate="footer">
@@ -52,7 +44,7 @@
                 <div *ngIf="f['idPelanggan'].errors['required']">
                   ID Pelanggan belum diisi
                 </div>
-                <div *ngIf="f['idPelanggan'].errors['minlength']">
+                <!-- <div *ngIf="f['idPelanggan'].errors['minlength']">
                   ID Pelanggan memiliki min.
                   {{ f["idPelanggan"].errors["minlength"]["requiredLength"] }}
                   karakter
@@ -61,7 +53,7 @@
                   ID Pelanggan memiliki maksimal
                   {{ f["idPelanggan"].errors["maxlength"]["requiredLength"] }}
                   karakter
-                </div>
+                </div> -->
               </div>
             </div>
 
@@ -71,13 +63,13 @@
               formControlName="userId"
               aria-label="select users"
               (change)="changeSelect($event)"
+              [ngClass]="{ 'is-invalid': submitted && f['userId'].errors }"
             >
               <option value="">(choose)</option>
               <option *ngFor="let item of users" value="{{ item.userId }}">
                 {{ item.userId }}: {{ item.nama }}
               </option>
             </select>
-
             <div
               *ngIf="submitted && f['userId'].errors"
               class="invalid-feedback"
@@ -165,6 +157,7 @@
                 color: #063a41;
                 border: none;
                 font-weight: 600;
+                margin: 20;
               "
             >
               Reset
@@ -203,12 +196,17 @@
       >
         <p-table
           #dt
-          [globalFilterFields]="['nama', 'noTelp', 'alamat']"
+          [value]="masterPelanggan"
           dataKey="id"
-          [value]="pelanggan"
           [paginator]="true"
           [rows]="5"
+          [lazy]="true"
+          (onLazyLoad)="nextPage($event)"
           [rowsPerPageOptions]="[5, 10, 15, 20]"
+          [totalRecords]="totalRows"
+          [globalFilterFields]="['nama', 'noTelp', 'alamat']"
+          [loading]="loading"
+          [showCurrentPageReport]="true"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         >
           <!-- <ng-template pTemplate="caption">
@@ -233,6 +231,24 @@
                   placeholder="Cari nama, no. telpon atau alamat"
                 />
               </span>
+
+              <button
+                pButton
+                type="button"
+                class="p-button-warning btn-sm btn-add"
+                (click)="showAdd()"
+              >
+                <i style="color: white" class="pi pi-plus"></i> Tambah Pelanggan
+              </button>
+              <button
+                pButton
+                pRipple
+                type="button"
+                label="Download File"
+                icon="pi pi-arrow-down"
+                class="p-button-custom"
+                (click)="getDownload()"
+              ></button>
             </div>
           </ng-template>
           <ng-template pTemplate="header">
@@ -326,7 +342,9 @@
 >
   <c-card-body>
     <div>
-      <p><b>Pengguna sudah terdaftar</b></p>
+      <p>
+        <b>{{ errorMessage }}</b>
+      </p>
     </div>
   </c-card-body>
   <ng-template pTemplate="footer">
@@ -352,7 +370,9 @@
 >
   <c-card-body>
     <div>
-      <p><b>Pengguna tidak dapat dihapus</b></p>
+      <p>
+        <b>{{ errorMessage }}</b>
+      </p>
     </div>
   </c-card-body>
   <ng-template pTemplate="footer">

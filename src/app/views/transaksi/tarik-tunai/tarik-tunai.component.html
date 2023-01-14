@@ -126,10 +126,15 @@
             </ng-template>
         </p-table>
     </c-card-body>
-    <ng-template pTemplate="footer">
-        <button type="button" class="p-button-warning" pButton icon="pi pi-times" label="Tutup"
-            (click)="onReset()"></button>
+    <p-table [value]="nasabah" > 
+    <ng-template pTemplate="body" let-nas>
+        <button type="button" class="p-button-warning btn-tampil-hasil" pButton icon="pi pi-times" label="Tutup"
+        (click)="onReset()"></button>
+        <button type="button" class="p-button-secondary btn-tampil-hasil" pButton icon="pi pi-download" label="Download"
+        (click)="downloadTarikTunaiPDF(nas.idTransaksi)"></button>
+
     </ng-template>
+</p-table>
 </p-dialog>
 
 <!-- DIALOG KONFIRMASI TARIK TUNAI  -->
@@ -146,7 +151,7 @@
 </p-confirmDialog>
 
 <!-- TAMPIL DIALOG (ERROR) NO REK TIDAK DITEMUKAN  -->
-<p-dialog #cek header="Info" [(visible)]="cekNorek" [style]="{width: '50vw'}" [draggable]="false" [resizable]="false" [modal]="true">
+<p-dialog #cek header="Info" [(visible)]="cekError" [style]="{width: '50vw'}" [draggable]="false" [resizable]="false" [modal]="true">
     <c-card-body>
         <div>
             <p style="margin-top: 20px;"><b>{{errorMessage}}</b></p>
@@ -154,7 +159,7 @@
     </c-card-body>
     <ng-template pTemplate="footer">
         <button type="button" class="p-button-danger" pButton icon="pi pi-times" label="Tutup"
-            (click)="onReset()"></button>
+            (click)="onResetError()"></button>
     </ng-template>
 </p-dialog>
 
@@ -287,3 +292,17 @@
 
 <!-- TOAST -->
 <p-toast></p-toast>
+
+<!-- LOADING  -->
+<div class="my-container">
+    <ng-template #customLoadingTemplate>
+      <div class="custom-class">
+      </div>
+    </ng-template>
+  
+    <ngx-loading
+      [show]="loading"
+      [config]="{}"
+      [template]="customLoadingTemplate"
+    ></ngx-loading>
+  </div>

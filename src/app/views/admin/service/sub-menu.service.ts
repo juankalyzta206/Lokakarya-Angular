@@ -17,6 +17,26 @@ export class SubMenuService {
     })
   }
 
+  getPage(
+    page: number | undefined,
+    size: number | undefined,
+    search: any
+  ): Observable<any> {
+    let bodyString = JSON.stringify(search); // Stringify payload
+    console.log(bodyString);
+
+    return this.http.get(
+      this.baseUrl +
+        'subMenu/findAllWithPagination?page=' +
+        page +
+        '&size=' +
+        size,
+      {
+        responseType: 'json',
+      }
+    );
+  }
+
   add(data: any): Observable<any> {
     var headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -41,5 +61,13 @@ export class SubMenuService {
       Accept: 'application/json',
     });
     return this.http.delete(this.baseUrl + 'subMenu/deleteById?id=' + id);
+  }
+
+  download(): Observable<any>{
+    return this.http.get(
+      this.baseUrl + 'subMenu/exportToPdfALL',{
+        responseType: 'blob',
+      }
+    );
   }
 }
